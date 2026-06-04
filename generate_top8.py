@@ -230,6 +230,10 @@ def map_item_name(name):
     name_clean = name.strip()
     name_lower = name_clean.lower()
     
+    # Chuẩn hóa nếu không có vật phẩm
+    if name_lower in ["no item", "none", "no_item"]:
+        return ""
+        
     if name_lower in item_map:
         return item_map[name_lower]
         
