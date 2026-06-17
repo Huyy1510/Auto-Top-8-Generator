@@ -1,0 +1,4 @@
+# Ignore generated tournament outputs
+*.png
+*_usage.json
+*_usage.md

@@ -12,9 +12,10 @@ Một công cụ bằng Python tự động hóa 100% quy trình xử lý sau gi
 
 ## Cấu trúc dự án
 
-- `generate_top8.py`: File script Python chạy chính.
-- `pokemon_name_mapping.json`: Dữ liệu ánh xạ tên Pokemon tương thích API generator.
-- `item_name_mapping.json`: Dữ liệu ánh xạ tên vật phẩm tương thích API generator.
+- `generate_top8.py`: Script tự động tạo bảng xếp hạng và PokePaste cho Top 8 người chơi.
+- `fetch_usage.py`: Script tự động thu thập và phân tích chỉ số sử dụng (Usage Statistics) của tất cả người chơi trong giải đấu (hỗ trợ cả giải đấu Public và Private).
+- `pokemon_name_mapping.json`: Dữ liệu ánh xạ tên Pokemon tương thích API generator và chuẩn hóa tên.
+- `item_name_mapping.json`: Dữ liệu ánh xạ tên vật phẩm tương thích API generator và chuẩn hóa tên.
 - `README.md`: Hướng dẫn sử dụng này.
 
 ## Yêu cầu hệ thống
@@ -23,28 +24,53 @@ Một công cụ bằng Python tự động hóa 100% quy trình xử lý sau gi
 
 ## Hướng dẫn sử dụng
 
-1. Mở Terminal hoặc Command Prompt tại thư mục dự án.
-2. Chạy lệnh sau:
+### 1. Tự động kết xuất Top 8 (generate_top8.py)
+
+Mở Terminal hoặc Command Prompt tại thư mục dự án và chạy:
 
 ```bash
 python3 generate_top8.py "<URL hoặc ID giải đấu trên Limitless>"
 ```
 
-### Ví dụ:
-
-Sử dụng URL giải đấu:
+#### Ví dụ:
 ```bash
-python3 generate_top8.py "https://play.limitlesstcg.com/tournament/6a17f60e0f6c1f0899862863/standings"
+python3 generate_top8.py "https://play.limitlesstcg.com/tournament/6a141fe98c163b8097996cc4/standings"
 ```
 
-Sử dụng ID giải đấu trực tiếp:
+#### Kết quả đầu ra:
+- **Ảnh bảng xếp hạng**: File ảnh `.png` (ví dụ: `Alpensee_Tour_top8.png`) được lưu trực tiếp tại thư mục hiện tại.
+- **Báo cáo trên Terminal**: In bảng Markdown tóm tắt thứ hạng, tên, quốc gia, kết quả trận đấu, và link PokePaste của từng người chơi trong Top 8.
+
+---
+
+### 2. Phân tích chỉ số sử dụng (fetch_usage.py)
+
+Script này giúp thống kê tần suất xuất hiện (Usage rate) của Pokemon, vật phẩm (Items), đặc tính (Abilities), hệ Tera (Tera Types), tính cách (Natures), và các chiêu thức (Moves) của giải đấu.
+
+#### Cách chạy:
 ```bash
-python3 generate_top8.py "6a17f60e0f6c1f0899862863"
+python3 fetch_usage.py "<URL hoặc ID giải đấu>" [tùy chọn]
 ```
 
-### Kết quả đầu ra:
-- **Ảnh bảng xếp hạng**: File ảnh `.png` (ví dụ: `Pokemon_VGC_UmbreNews_top8.png`) sẽ được lưu trực tiếp tại thư mục bạn đang đứng.
-- **Báo cáo trên Terminal**: In ra một bảng Markdown tóm tắt thứ hạng, tên, quốc gia, kết quả trận đấu, và link PokePaste của từng người chơi trong Top 8.
+#### Các tham số tùy chọn:
+- `-k`, `--key`: Cung cấp **Limitless API Key** để truy cập các giải đấu riêng tư (Private tournaments). Bạn cũng có thể thiết lập biến môi trường `LIMITLESS_API_KEY`.
+- `-o`, `--output-dir`: Thư mục lưu file báo cáo kết quả (mặc định là thư mục hiện tại `.`).
+- `-l`, `--limit`: Số lượng Pokemon đứng đầu hiển thị chi tiết build (mặc định là `20`, truyền `-1` để xem tất cả).
+
+#### Ví dụ:
+- Phân tích giải đấu công khai (Public):
+  ```bash
+  python3 fetch_usage.py "https://play.limitlesstcg.com/tournament/6a141fe98c163b8097996cc4/standings"
+  ```
+- Phân tích giải đấu riêng tư (Private) bằng API Key:
+  ```bash
+  python3 fetch_usage.py "https://play.limitlesstcg.com/tournament/private_tour_id/standings" -k "YOUR_LIMITLESS_API_KEY"
+  ```
+
+#### Kết quả đầu ra:
+- **Báo cáo chi tiết Markdown**: File `.md` (ví dụ: `Alpensee_Tour_usage.md`) hiển thị bảng xếp hạng tổng và bảng chi tiết xây dựng build cho từng Pokemon (Vật phẩm, Đặc tính, Hệ Tera, Chiêu thức, Tính cách).
+- **Dữ liệu JSON**: File `.json` chứa toàn bộ dữ liệu cấu trúc sạch để dễ dàng tích hợp hoặc xử lý tiếp.
+- **Tóm tắt trên Terminal**: Hiển thị Top 10 Pokemon được sử dụng nhiều nhất.
 
 ## Đóng góp ý kiến
 

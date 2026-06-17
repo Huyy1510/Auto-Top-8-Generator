@@ -4,16 +4,21 @@ Tài liệu này ghi lại kết quả kiểm thử và hướng dẫn vận hà
 
 ## Danh sách tệp tin đã triển khai
 
-1. **[generate_top8.py](file:///Users/huy/Code/test/private/generate_top8.py)**: Script Python chính tự động hóa toàn bộ quy trình.
-2. **[pokemon_name_mapping.json](file:///Users/huy/Code/test/private/pokemon_name_mapping.json)**: Dữ liệu ánh xạ tên Pokemon tương thích với generator.joaoabel.pt.
-3. **[item_name_mapping.json](file:///Users/huy/Code/test/private/item_name_mapping.json)**: Dữ liệu ánh xạ vật phẩm tương thích.
+1. **[generate_top8.py](file:///Users/huy/Code/test/private/generate_top8.py)**: Script Python chính tự động hóa tạo ảnh bảng xếp hạng Top 8 và PokePastes.
+2. **[fetch_usage.py](file:///Users/huy/Code/test/private/fetch_usage.py)**: Script Python thống kê tỷ lệ sử dụng (Usage Statistics) của Pokemon và build chi tiết.
+3. **[pokemon_name_mapping.json](file:///Users/huy/Code/test/private/pokemon_name_mapping.json)**: Dữ liệu ánh xạ tên Pokemon để tránh lỗi và đồng bộ hóa với generator.
+4. **[item_name_mapping.json](file:///Users/huy/Code/test/private/item_name_mapping.json)**: Dữ liệu ánh xạ vật phẩm.
 
 ## Cách chạy lệnh
 
-Chạy script với URL của giải đấu hoặc ID giải đấu từ Limitless:
-
+### Tạo bảng xếp hạng Top 8:
 ```bash
 python3 generate_top8.py "https://play.limitlesstcg.com/tournament/6a17f60e0f6c1f0899862863/standings"
+```
+
+### Thu thập dữ liệu chỉ số sử dụng (Usage Statistics):
+```bash
+python3 fetch_usage.py "https://play.limitlesstcg.com/tournament/6a17f60e0f6c1f0899862863/standings"
 ```
 
 ## Báo cáo chạy thử nghiệm (Giải UmbreNews #17)
