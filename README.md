@@ -12,12 +12,17 @@ Một công cụ bằng Python tự động hóa 100% quy trình xử lý sau gi
 
 ## Cấu trúc dự án
 
-- `generate_top8.py`: Script tự động tạo bảng xếp hạng và PokePaste cho Top 8 người chơi.
-- `fetch_usage.py`: Script tự động thu thập và phân tích chỉ số sử dụng (Usage Statistics) của tất cả người chơi trong giải đấu (hỗ trợ cả giải đấu Public và Private).
-- `compare_usage.py`: Script tự động so sánh dịch chuyển meta và biến động cách xây dựng (build) giữa 2 tuần giải đấu/tệp JSON usage.
-- `pokemon_name_mapping.json`: Dữ liệu ánh xạ tên Pokemon tương thích API generator và chuẩn hóa tên.
-- `item_name_mapping.json`: Dữ liệu ánh xạ tên vật phẩm tương thích API generator và chuẩn hóa tên.
-- `README.md`: Hướng dẫn sử dụng này.
+- `src/`: Thư mục chứa các tệp mã nguồn Python chính.
+  - `generate_top8.py`: Script tự động tạo ảnh bảng xếp hạng và PokePaste cho Top 8 người chơi.
+  - `fetch_usage.py`: Script tự động thu thập và phân tích chỉ số sử dụng (Usage Statistics) của tất cả người chơi.
+  - `compare_usage.py`: Script tự động so sánh biến động metagame và cách xây dựng giữa các tuần.
+- `data/`: Thư mục chứa từ điển ánh xạ chuẩn hóa tên.
+  - `pokemon_name_mapping.json`: Từ điển ánh xạ tên Pokemon.
+  - `item_name_mapping.json`: Từ điển ánh xạ tên vật phẩm.
+- `docs/`: Thư mục chứa tài liệu hướng dẫn và kế hoạch phát triển.
+  - `walkthrough.md`: Hướng dẫn vận hành chi tiết và lịch sử kiểm thử.
+  - `implementation_plan.md`: Kế hoạch triển khai dự án.
+- `README.md`: Tài liệu hướng dẫn sử dụng tổng quan này.
 
 ## Yêu cầu hệ thống
 
@@ -25,17 +30,17 @@ Một công cụ bằng Python tự động hóa 100% quy trình xử lý sau gi
 
 ## Hướng dẫn sử dụng
 
-### 1. Tự động kết xuất Top 8 (generate_top8.py)
+### 1. Tự động kết xuất Top 8 (src/generate_top8.py)
 
 Mở Terminal hoặc Command Prompt tại thư mục dự án và chạy:
 
 ```bash
-python3 generate_top8.py "<URL hoặc ID giải đấu trên Limitless>"
+python3 src/generate_top8.py "<URL hoặc ID giải đấu trên Limitless>"
 ```
 
 #### Ví dụ:
 ```bash
-python3 generate_top8.py "https://play.limitlesstcg.com/tournament/6a141fe98c163b8097996cc4/standings"
+python3 src/generate_top8.py "https://play.limitlesstcg.com/tournament/6a141fe98c163b8097996cc4/standings"
 ```
 
 #### Kết quả đầu ra:
@@ -44,13 +49,13 @@ python3 generate_top8.py "https://play.limitlesstcg.com/tournament/6a141fe98c163
 
 ---
 
-### 2. Phân tích chỉ số sử dụng (fetch_usage.py)
+### 2. Phân tích chỉ số sử dụng (src/fetch_usage.py)
 
 Script này giúp thống kê tần suất xuất hiện (Usage rate) của Pokemon, vật phẩm (Items), đặc tính (Abilities), hệ Tera (Tera Types), tính cách (Natures), và các chiêu thức (Moves) của giải đấu.
 
 #### Cách chạy:
 ```bash
-python3 fetch_usage.py "<URL hoặc ID giải đấu>" [tùy chọn]
+python3 src/fetch_usage.py "<URL hoặc ID giải đấu>" [tùy chọn]
 ```
 
 #### Các tham số tùy chọn:
@@ -61,11 +66,11 @@ python3 fetch_usage.py "<URL hoặc ID giải đấu>" [tùy chọn]
 #### Ví dụ:
 - Phân tích giải đấu công khai (Public):
   ```bash
-  python3 fetch_usage.py "https://play.limitlesstcg.com/tournament/6a141fe98c163b8097996cc4/standings"
+  python3 src/fetch_usage.py "https://play.limitlesstcg.com/tournament/6a141fe98c163b8097996cc4/standings"
   ```
 - Phân tích giải đấu riêng tư (Private) bằng API Key:
   ```bash
-  python3 fetch_usage.py "https://play.limitlesstcg.com/tournament/private_tour_id/standings" -k "YOUR_LIMITLESS_API_KEY"
+  python3 src/fetch_usage.py "https://play.limitlesstcg.com/tournament/private_tour_id/standings" -k "YOUR_LIMITLESS_API_KEY"
   ```
 
 #### Kết quả đầu ra:
@@ -75,13 +80,13 @@ python3 fetch_usage.py "<URL hoặc ID giải đấu>" [tùy chọn]
 
 ---
 
-### 3. So sánh biến động metagame (compare_usage.py)
+### 3. So sánh biến động metagame (src/compare_usage.py)
 
 Script này giúp so sánh dữ liệu chỉ số sử dụng giữa 2 giải đấu (hoặc tuần thi đấu trước và sau) thông qua hai tệp JSON được tạo ra bởi `fetch_usage.py`. Nó sẽ tính toán tự động chênh lệch phần trăm sử dụng, dịch chuyển thứ hạng, biến động vật phẩm, đặc tính, Tera type và chiêu thức sử dụng trên từng Pokémon.
 
 #### Cách chạy:
 ```bash
-python3 compare_usage.py <đường_dẫn_json_cũ> <đường_dẫn_json_mới> [tùy_chọn]
+python3 src/compare_usage.py <đường_dẫn_json_cũ> <đường_dẫn_json_mới> [tùy_chọn]
 ```
 
 #### Các tham số tùy chọn:
@@ -90,7 +95,7 @@ python3 compare_usage.py <đường_dẫn_json_cũ> <đường_dẫn_json_mới>
 
 #### Ví dụ:
 ```bash
-python3 compare_usage.py "Alpensee_Tour_60_usage.json" "Alpensee_Tour_62_usage.json"
+python3 src/compare_usage.py "Alpensee_Tour_60_usage.json" "Alpensee_Tour_62_usage.json"
 ```
 
 #### Kết quả đầu ra:
@@ -119,7 +124,7 @@ python3 compare_usage.py "Alpensee_Tour_60_usage.json" "Alpensee_Tour_62_usage.j
 
 ## Đóng góp ý kiến
 
-Nếu bạn gặp bất kỳ vấn đề nào liên quan đến việc ánh xạ tên Pokemon hoặc lỗi kết nối API, vui lòng gửi phản hồi hoặc tự cập nhật trực tiếp vào hai file `pokemon_name_mapping.json` và `item_name_mapping.json`.
+Nếu bạn gặp bất kỳ vấn đề nào liên quan đến việc ánh xạ tên Pokemon hoặc lỗi kết nối API, vui lòng gửi phản hồi hoặc tự cập nhật trực tiếp vào hai file `data/pokemon_name_mapping.json` và `data/item_name_mapping.json`.
 
 ---
 *Dự án sử dụng API công khai của [Limitless TCG/VGC](https://play.limitlesstcg.com) và dịch vụ tạo ảnh của [VGC Standings Generator](https://generator.joaoabel.pt) của tác giả João Costa.*

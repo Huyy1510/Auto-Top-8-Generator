@@ -15,8 +15,9 @@ ssl_context = ssl._create_unverified_context()
 
 # Đường dẫn đến các file ánh xạ tên
 script_dir = os.path.dirname(os.path.abspath(__file__))
-POKEMON_MAP_PATH = os.path.join(script_dir, "pokemon_name_mapping.json")
-ITEM_MAP_PATH = os.path.join(script_dir, "item_name_mapping.json")
+project_root = os.path.dirname(script_dir)
+POKEMON_MAP_PATH = os.path.join(project_root, "data", "pokemon_name_mapping.json")
+ITEM_MAP_PATH = os.path.join(project_root, "data", "item_name_mapping.json")
 
 # Tải từ điển ánh xạ nếu có
 pokemon_map = {}
