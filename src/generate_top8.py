@@ -356,18 +356,14 @@ def main():
             # Kiểm tra xem có phải là Mega Evolution hay không dựa trên vật phẩm
             is_mega = False
             item_clean = raw_item_name.strip().lower() if raw_item_name else ""
-            if item_clean and item_clean != "eviolite" and (item_clean.endswith("ite") or "ite x" in item_clean or "ite y" in item_clean or "ite-x" in item_clean or "ite-y" in item_clean):
+            if item_clean and item_clean != "eviolite" and (item_clean.endswith("ite") or "ite x" in item_clean or "ite y" in item_clean or "ite-x" in item_clean or "ite-y" in item_clean or "unite x" in item_clean or "unite y" in item_clean or "unite-x" in item_clean or "unite-y" in item_clean):
                 is_mega = True
                 
             p_name_for_mapping = raw_p_name
             if is_mega:
-                if "charizardite x" in item_clean:
+                if " x" in item_clean or "-x" in item_clean:
                     p_name_for_mapping = f"{raw_p_name} Mega X"
-                elif "charizardite y" in item_clean:
-                    p_name_for_mapping = f"{raw_p_name} Mega Y"
-                elif "mewtwoite x" in item_clean:
-                    p_name_for_mapping = f"{raw_p_name} Mega X"
-                elif "mewtwoite y" in item_clean:
+                elif " y" in item_clean or "-y" in item_clean:
                     p_name_for_mapping = f"{raw_p_name} Mega Y"
                 else:
                     p_name_for_mapping = f"{raw_p_name} Mega"
