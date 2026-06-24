@@ -571,6 +571,191 @@ def write_html_report(data, filename):
             object-fit: contain;
             flex-shrink: 0;
         }}
+
+        /* Layout Tabs & Navigation */
+        .tabs {{
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }}
+        
+        .tab-button {{
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }}
+        
+        .tab-button:hover {{
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.03);
+        }}
+        
+        .tab-button.active {{
+            color: var(--primary);
+            background-color: var(--primary-glow);
+        }}
+
+        /* Summary Table Dashboard */
+        .summary-card {{
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }}
+        
+        .summary-table-container {{
+            overflow-x: auto;
+            margin-top: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-main);
+        }}
+        
+        .summary-table {{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 1000px;
+        }}
+        
+        .summary-table th, .summary-table td {{
+            padding: 1rem;
+            border: 1px solid var(--border);
+            vertical-align: middle;
+            text-align: center;
+        }}
+        
+        .summary-table thead th {{
+            background-color: rgba(255, 255, 255, 0.02);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }}
+        
+        /* Left-align first column (Pokémon Info) */
+        .summary-table th:first-child, .summary-table td:first-child {{
+            text-align: left;
+            padding-left: 1.5rem;
+            width: 240px;
+        }}
+        
+        .table-poke-cell {{
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }}
+        
+        .poke-row-rank {{
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            min-width: 24px;
+        }}
+        
+        .poke-row-info {{
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }}
+        
+        .poke-row-name {{
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }}
+        
+        .poke-row-pct {{
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }}
+        
+        .table-item-cell {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }}
+        
+        .item-info {{
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            gap: 0.15rem;
+        }}
+        
+        .table-cell-content {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+        }}
+        
+        .cell-main-text {{
+            font-weight: 500;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }}
+        
+        .cell-sub-text {{
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }}
+        
+        .teammates-cell {{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: center;
+            align-items: center;
+        }}
+        
+        .teammate-row {{
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }}
+        
+        .teammate-row:hover {{
+            background-color: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.2);
+        }}
+        
+        .teammate-name {{
+            font-weight: 500;
+            white-space: nowrap;
+        }}
+        
+        .teammate-pct {{
+            color: var(--success);
+            font-weight: 600;
+        }}
+        
+        .empty-state-cell {{
+            color: var(--text-muted);
+            font-style: italic;
+        }}
     </style>
 </head>
 <body>
@@ -582,8 +767,13 @@ def write_html_report(data, filename):
             <span class="meta-badge">📊 Teams Analyzed: {data['teams_analyzed']}</span>
         </div>
     </div>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="switchLayout('details')">Detailed Build Analysis</button>
+        <button class="tab-button" onclick="switchLayout('summary')">Top 12 Pokémon Summary</button>
+    </div>
     
-    <div class="dashboard">
+    <div id="layout-details" class="dashboard">
         <div class="sidebar">
             <div class="search-container">
                 <input type="text" class="search-input" id="search" placeholder="Search Pokémon...">
@@ -807,6 +997,140 @@ def write_html_report(data, filename):
                 </div>
             `;
         }}
+
+        function switchLayout(layout) {{
+            const detailsLayout = document.getElementById("layout-details");
+            const summaryLayout = document.getElementById("layout-summary");
+            const buttons = document.querySelectorAll(".tab-button");
+            
+            buttons.forEach(btn => btn.classList.remove("active"));
+            
+            if (layout === 'details') {{
+                detailsLayout.style.display = "grid";
+                summaryLayout.style.display = "none";
+                buttons[0].classList.add("active");
+            }} else {{
+                detailsLayout.style.display = "none";
+                summaryLayout.style.display = "block";
+                buttons[1].classList.add("active");
+                renderSummaryTable();
+            }}
+        }}
+
+        function renderSummaryTable() {{
+            const summaryEl = document.getElementById("layout-summary");
+            if (!summaryEl) return;
+            
+            const top12 = pokes.slice(0, 12);
+            
+            let html = `
+                <div class="summary-card">
+                    <h3 class="card-title">Top 12 Pokémon Metagame Summary</h3>
+                    <div class="summary-table-container">
+                        <table class="summary-table">
+                            <thead>
+                                <tr>
+                                    <th>Pokémon</th>
+                                    <th>Most Used Item</th>
+                                    <th>Most Used Move</th>
+                                    <th>Most Used Ability</th>
+                                    <th>Top 3 Teammates</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            top12.forEach(p => {{
+                const item = p.items && p.items.length > 0 ? p.items[0] : null;
+                const mv = p.moves && p.moves.length > 0 ? p.moves[0] : null;
+                const ab = p.abilities && p.abilities.length > 0 ? p.abilities[0] : null;
+                const tms = p.teammates ? p.teammates.slice(0, 3) : [];
+                
+                let itemHtml = '';
+                if (item) {{
+                    itemHtml = `
+                        <div class="table-item-cell">
+                            <img src="${{getItemSpriteUrl(item.name)}}" class="item-sprite-mini" alt="${{item.name}}" onerror="this.style.display='none'">
+                            <div class="item-info">
+                                <div class="cell-main-text">${{item.name}}</div>
+                                <div class="cell-sub-text">${{item.percentage.toFixed(1)}}%</div>
+                            </div>
+                        </div>
+                    `;
+                }} else {{
+                    itemHtml = `<div class="empty-state-cell">N/A</div>`;
+                }}
+                
+                let moveHtml = '';
+                if (mv) {{
+                    moveHtml = `
+                        <div class="table-cell-content">
+                            <div class="cell-main-text">${{mv.name}}</div>
+                            <div class="cell-sub-text">${{mv.percentage.toFixed(1)}}%</div>
+                        </div>
+                    `;
+                }} else {{
+                    moveHtml = `<div class="empty-state-cell">N/A</div>`;
+                }}
+                
+                let abilityHtml = '';
+                if (ab) {{
+                    abilityHtml = `
+                        <div class="table-cell-content">
+                            <div class="cell-main-text">${{ab.name}}</div>
+                            <div class="cell-sub-text">${{ab.percentage.toFixed(1)}}%</div>
+                        </div>
+                    `;
+                }} else {{
+                    abilityHtml = `<div class="empty-state-cell">N/A</div>`;
+                }}
+                
+                let teammatesHtml = '';
+                if (tms.length > 0) {{
+                    teammatesHtml = `
+                        <div class="teammates-cell">
+                            ${{tms.map(tm => `
+                                <div class="teammate-row" title="${{tm.name}}: ${{tm.percentage.toFixed(1)}}%">
+                                    <img src="${{getPokemonSpriteUrl(tm.name)}}" class="pokemon-sprite-mini" style="width: 24px; height: 24px;" alt="${{tm.name}}">
+                                    <span class="teammate-name">${{tm.name}}</span>
+                                    <span class="teammate-pct">${{tm.percentage.toFixed(0)}}%</span>
+                                </div>
+                            `).join('')}}
+                        </div>
+                    `;
+                }} else {{
+                    teammatesHtml = `<div class="empty-state-cell">N/A</div>`;
+                }}
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div class="table-poke-cell">
+                                <span class="poke-row-rank">#${{p.rank}}</span>
+                                <img src="${{getPokemonSpriteUrl(p.name)}}" class="pokemon-sprite-mini" style="width: 40px; height: 40px;" alt="${{p.name}}">
+                                <div class="poke-row-info">
+                                    <div class="poke-row-name">${{p.name}}</div>
+                                    <div class="poke-row-pct">${{p.percentage.toFixed(1)}}%</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${{itemHtml}}</td>
+                        <td>${{moveHtml}}</td>
+                        <td>${{abilityHtml}}</td>
+                        <td>${{teammatesHtml}}</td>
+                    </tr>
+                `;
+            }});
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            summaryEl.innerHTML = html;
+        }}
         
         searchInput.oninput = (e) => {{
             const val = e.target.value;
@@ -817,6 +1141,8 @@ def write_html_report(data, filename):
         renderList();
         renderDetails();
     </script>
+    
+    <div id="layout-summary" style="display: none;"></div>
 </body>
 </html>
 """
@@ -930,7 +1256,8 @@ def main():
                     "moves": Counter(),
                     "teras": Counter(),
                     "natures": Counter(),
-                    "forms": Counter()
+                    "forms": Counter(),
+                    "teammates": Counter()
                 }
                 
             poke_details[poke_name]["forms"][form_name] += 1
@@ -963,6 +1290,14 @@ def main():
             for move in attacks:
                 if move and move.strip() and move.lower() != "none":
                     poke_details[poke_name]["moves"][move.strip()] += 1
+
+        # Thống kê Đồng đội (Teammates)
+        for pm_name in seen_in_team:
+            if pm_name not in poke_details:
+                continue
+            for teammate_name in seen_in_team:
+                if teammate_name != pm_name:
+                    poke_details[pm_name]["teammates"][teammate_name] += 1
 
     if n_teams == 0:
         print("\n[CẢNH BÁO] Không tìm thấy đội hình (decklist) nào được công khai trong bảng xếp hạng.", file=sys.stderr)
@@ -997,6 +1332,8 @@ def main():
         natures_list = [{"name": nt, "count": cnt, "percentage": (cnt / count) * 100} for nt, cnt in sort_counter(details_entry["natures"])]
         forms_list = [{"name": f, "count": cnt, "percentage": (cnt / count) * 100} for f, cnt in sort_counter(details_entry.get("forms", {}))]
         
+        teammates_list = [{"name": tm, "count": cnt, "percentage": (cnt / count) * 100} for tm, cnt in sort_counter(details_entry.get("teammates", {}))]
+        
         usage_json_data["pokemon_usage"].append({
             "rank": rank,
             "name": poke_name,
@@ -1007,7 +1344,8 @@ def main():
             "moves": moves_list,
             "teras": teras_list,
             "natures": natures_list,
-            "forms": forms_list
+            "forms": forms_list,
+            "teammates": teammates_list
         })
         
     # 6. Tạo file Markdown báo cáo
