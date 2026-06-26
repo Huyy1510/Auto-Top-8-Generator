@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VGC-Analytics | Local Desktop Dashboard</title>
+    <!-- Google Fonts: Outfit & JetBrains Mono for logs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-main: #0e1424;
+            --bg-card: #151d30;
+            --border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Update Banner */
+        #update-banner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #1e1b4b, #311042);
+            border-bottom: 2px solid var(--primary);
+            padding: 0.75rem 1.5rem;
+            z-index: 9999;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .update-message {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .update-badge {
+            background-color: var(--accent);
+            color: #fff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .update-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .update-btn {
+            background-color: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        }
+
+        .update-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .close-banner-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-main);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 1.5rem;
+            z-index: 100;
+        }
+
+        .brand-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-glow);
+            color: #fff;
+            border-color: rgba(99, 102, 241, 0.25);
+            box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.05);
+        }
+
+        .menu-icon {
+            font-size: 1.25rem;
+        }
+
+        .footer-section {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .version-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Main Workspace */
+        .workspace {
+            flex-grow: 1;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 2rem;
+            margin-top: 0;
+            transition: margin-top 0.4s ease;
+        }
+
+        body.has-banner .workspace {
+            margin-top: 40px; /* Offset for update banner */
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 2rem;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* Cards and forms */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-input::placeholder {
+            color: #4b5563;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.9rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        .btn-accent:hover {
+            background-color: #059669;
+        }
+
+        /* Compare Select Grid */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Console Output */
+        #console-container {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            background-color: #070a13;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+        }
+
+        .console-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .console-pulse {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        .console-logs {
+            background-color: #05070c;
+            border: 1px solid var(--border);
+            border-radius: 0 0 12px 12px;
+            padding: 1.25rem;
+            height: 250px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #d1d5db;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Custom Scrollbar for Logs */
+        .console-logs::-webkit-scrollbar {
+            width: 8px;
+        }
+        .console-logs::-webkit-scrollbar-track {
+            background: #05070c;
+        }
+        .console-logs::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        .console-logs::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        .log-line {
+            white-space: pre-wrap;
+            margin-bottom: 0.35rem;
+        }
+
+        .log-line.success {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .log-line.error {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .log-line.info {
+            color: var(--primary);
+        }
+
+        .report-link-container {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: rgba(16, 185, 129, 0.08);
+            border: 1px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .open-report-btn {
+            display: inline-flex;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.25rem;
+            background-color: var(--accent);
+        }
+        
+        .open-report-btn:hover {
+            background-color: #059669;
+        }
+
+        /* History Reports List */
+        .reports-list-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .list-toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .report-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .report-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+        }
+
+        .report-info {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .report-badge {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .report-badge.usage {
+            background-color: var(--primary-glow);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .report-badge.compare {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .report-badge.top8 {
+            background-color: var(--accent-glow);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .report-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .report-name {
+            font-weight: 600;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .report-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .report-action-btn {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .report-action-btn:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        
+        .empty-history {
+            text-align: center;
+            padding: 3rem;
+            background-color: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Update Notification Banner -->
+    <div id="update-banner">
+        <div class="update-message">
+            <span class="update-badge">Cập nhật</span>
+            <span id="update-banner-text">Đã có phiên bản mới nhất trên GitHub!</span>
+        </div>
+        <div class="update-actions">
+            <a href="#" id="update-download-link" target="_blank" class="update-btn">Tải Ngay</a>
+            <button onclick="dismissUpdate()" class="close-banner-btn" title="Đóng">✕</button>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div>
+            <div class="brand-section">
+                <h1 class="brand-title">📊 VGC Analytics</h1>
+                <span class="brand-subtitle">Desktop Engine</span>
+            </div>
+            
+            <ul class="menu-list">
+                <li class="menu-item active" onclick="switchTab('usage')">
+                    <span class="menu-icon">📈</span>
+                    <span>Usage Analyzer</span>
+                </li>
+                <li class="menu-item" onclick="switchTab('compare')">
+                    <span class="menu-icon">🔄</span>
+                    <span>Compare Stats</span>
+                </li>
+                <li class="menu-item" onclick="switchTab('top8')">
+                    <span class="menu-icon">🏆</span>
+                    <span>Top 8 Graphics</span>
+                </li>
+                <li class="menu-item" onclick="switchTab('history')">
+                    <span class="menu-icon">📂</span>
+                    <span>Reports History</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="footer-section">
+            <div class="version-info">
+                <span>Phiên bản:</span>
+                <span id="current-version-lbl">{{APP_VERSION}}</span>
+            </div>
+            <div class="version-info" id="update-status-lbl" style="font-size: 0.75rem;">
+                <span>Trạng thái: Đang check...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+        
+        <!-- Tab 1: Usage Stats Generator -->
+        <div id="tab-usage" class="tab-content active">
+            <div class="section-header">
+                <h2 class="section-title">Tournament Usage Statistics</h2>
+                <p class="section-desc">Thu thập danh sách đội hình và thống kê tỉ lệ sử dụng Pokémon, Moves, Items, Abilities.</p>
+            </div>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label" for="usage-tournament">Tournament ID hoặc URL</label>
+                    <input type="text" id="usage-tournament" class="form-input" placeholder="Ví dụ: 6a141fe98c163b8097996cc4 hoặc https://limitlesstcg.com/tournaments/60">
+                    <div class="form-hint">Hỗ trợ cả mã ID 24 ký tự và đường dẫn URL giải đấu từ Limitless.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="usage-api-key">Limitless API Key (Tùy chọn)</label>
+                    <input type="password" id="usage-api-key" class="form-input" placeholder="Nhập API Key để truy cập các giải đấu private">
+                    <div class="form-hint">API Key được lưu trữ cục bộ trong trình duyệt của bạn (Local Storage) để tự động điền lần sau.</div>
+                </div>
+                
+                <button onclick="generateUsage()" class="btn">
+                    <span>⚡</span> Bắt đầu Phân tích & Tạo Báo Cáo
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab 2: Compare Stats Analyzer -->
+        <div id="tab-compare" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Compare Tournament Stats</h2>
+                <p class="section-desc">So sánh chi tiết tỉ lệ sử dụng và dịch chuyển meta/build của Pokémon giữa 2 tuần đấu.</p>
+            </div>
+            
+            <div class="card">
+                <div class="compare-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="compare-old">Báo cáo tuần trước (Cũ)</label>
+                        <select id="compare-old" class="form-select">
+                            <option value="">-- Chọn báo cáo JSON cũ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="compare-new">Báo cáo tuần này (Mới)</label>
+                        <select id="compare-new" class="form-select">
+                            <option value="">-- Chọn báo cáo JSON mới --</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="compareUsage()" class="btn btn-accent">
+                    <span>🔄</span> So sánh & Tạo Báo Cáo Dịch Chuyển
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab 3: Top 8 Graphic Generator -->
+        <div id="tab-top8" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Top 8 Graphics Generator</h2>
+                <p class="section-desc">Tạo ảnh đồ họa bảng xếp hạng Top 8 đẹp mắt kèm PokePastes tự động.</p>
+            </div>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label" for="top8-tournament">Tournament ID hoặc URL</label>
+                    <input type="text" id="top8-tournament" class="form-input" placeholder="Nhập Tournament ID hoặc URL Limitless">
+                </div>
+                
+                <button onclick="generateTop8()" class="btn btn-accent" style="background-color: #8b5cf6;">
+                    <span>🏆</span> Tạo Đồ Họa Top 8
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab 4: History & Generated Reports -->
+        <div id="tab-history" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Reports History</h2>
+                <p class="section-desc">Quản lý và truy cập nhanh các tệp báo cáo đã tạo trên thiết bị của bạn.</p>
+            </div>
+            
+            <div class="list-toolbar">
+                <input type="text" id="history-search" oninput="filterHistory()" class="form-input search-bar" placeholder="Tìm kiếm tên giải đấu...">
+                <button onclick="loadReports()" class="btn" style="padding: 0.8rem 1.25rem; background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: #fff;">
+                    🔄 Làm Mới
+                </button>
+            </div>
+            
+            <div class="reports-list-container">
+                <div id="history-list" class="reports-grid">
+                    <!-- Reports lists here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shared Console Output Container -->
+        <div id="console-container">
+            <div class="console-header">
+                <div class="console-title">
+                    <div class="console-pulse"></div>
+                    <span>Console log output</span>
+                </div>
+                <button onclick="clearConsole()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem;">Xoá log</button>
+            </div>
+            <div id="console-logs" class="console-logs">
+                <div class="log-line info">Bảng log đang chờ lệnh...</div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        let allReports = [];
+        
+        // Load API Key from local storage on mount
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedKey = localStorage.getItem("limitless_api_key");
+            if (savedKey) {
+                document.getElementById("usage-api-key").value = savedKey;
+            }
+            
+            checkAppUpdate();
+            loadReports();
+        });
+        
+        // Save API Key if changed
+        document.getElementById("usage-api-key").oninput = (e) => {
+            localStorage.setItem("limitless_api_key", e.target.value);
+        };
+        
+        // Switch between tabs
+        function switchTab(tabName) {
+            // Remove active classes
+            document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+            
+            // Add active class to selected menu & content
+            const clickedMenu = Array.from(document.querySelectorAll(".menu-item")).find(item => 
+                item.getAttribute("onclick").includes(tabName)
+            );
+            if (clickedMenu) clickedMenu.classList.add("active");
+            
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) targetTab.classList.add("active");
+            
+            // If switched to compare, make sure we populate dropdowns
+            if (tabName === 'compare') {
+                populateCompareSelects();
+            }
+        }
+        
+        // Check update against GitHub Release API
+        function checkAppUpdate() {
+            fetch("/api/check-update")
+                .then(res => res.json())
+                .then(data => {
+                    const statusLbl = document.getElementById("update-status-lbl");
+                    if (data.needs_update) {
+                        statusLbl.innerHTML = `<span>Cập nhật: <strong style="color:var(--danger)">Cũ (${data.current_version})</strong></span>`;
+                        
+                        // Show banner
+                        document.body.classList.add("has-banner");
+                        document.getElementById("update-banner").style.display = "flex";
+                        document.getElementById("update-banner-text").textContent = `Phiên bản mới ${data.latest_version} đã sẵn sàng trên GitHub!`;
+                        document.getElementById("update-download-link").href = data.url;
+                    } else if (data.latest_version) {
+                        statusLbl.innerHTML = `<span>Cập nhật: <strong style="color:var(--accent)">Mới nhất</strong></span>`;
+                    } else {
+                        statusLbl.innerHTML = `<span>Cập nhật: <strong>N/A</strong></span>`;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("update-status-lbl").innerHTML = `<span>Cập nhật: <strong>Lỗi kết nối</strong></span>`;
+                });
+        }
+        
+        function dismissUpdate() {
+            document.body.classList.remove("has-banner");
+            document.getElementById("update-banner").style.display = "none";
+        }
+        
+        // Load generated reports list from local server
+        function loadReports() {
+            fetch("/api/reports")
+                .then(res => res.json())
+                .then(data => {
+                    allReports = data.reports || [];
+                    window.jsonReports = data.json_reports || [];
+                    
+                    renderHistory();
+                    if (document.getElementById("tab-compare").classList.contains("active")) {
+                        populateCompareSelects();
+                    }
+                });
+        }
+        
+        // Populate dropdown lists for comparison tab
+        function populateCompareSelects() {
+            const oldSelect = document.getElementById("compare-old");
+            const newSelect = document.getElementById("compare-new");
+            
+            // Save selected values to preserve them
+            const oldVal = oldSelect.value;
+            const newVal = newSelect.value;
+            
+            oldSelect.innerHTML = '<option value="">-- Chọn báo cáo JSON cũ --</option>';
+            newSelect.innerHTML = '<option value="">-- Chọn báo cáo JSON mới --</option>';
+            
+            if (window.jsonReports && window.jsonReports.length > 0) {
+                window.jsonReports.forEach(r => {
+                    const opt1 = document.createElement("option");
+                    opt1.value = r.filename;
+                    opt1.textContent = r.name;
+                    
+                    const opt2 = opt1.cloneNode(true);
+                    
+                    oldSelect.appendChild(opt1);
+                    newSelect.appendChild(opt2);
+                });
+            }
+            
+            // Reapply values
+            oldSelect.value = oldVal;
+            newSelect.value = newVal;
+        }
+        
+        // Render reports list into History panel
+        function renderHistory(filter = "") {
+            const historyList = document.getElementById("history-list");
+            historyList.innerHTML = "";
+            
+            let filtered = allReports;
+            if (filter) {
+                filtered = allReports.filter(r => r.name.toLowerCase().includes(filter.toLowerCase()));
+            }
+            
+            if (filtered.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">Chưa có tệp báo cáo nào được tạo.</div>';
+                return;
+            }
+            
+            filtered.forEach(r => {
+                const dateStr = new Date(r.mtime * 1000).toLocaleString('vi-VN', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                
+                const item = document.createElement("div");
+                item.className = "report-item";
+                item.innerHTML = `
+                    <div class="report-info">
+                        <span class="report-badge ${r.type}">${r.type}</span>
+                        <div class="report-details">
+                            <span class="report-name">${r.name}</span>
+                            <span class="report-meta">Tạo ngày: ${dateStr}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="${r.url}" target="_blank" class="report-action-btn">
+                            ${r.type === 'top8' ? '👁️ Xem Ảnh' : '📂 Mở Báo Cáo'}
+                        </a>
+                    </div>
+                `;
+                historyList.appendChild(item);
+            });
+        }
+        
+        function filterHistory() {
+            const q = document.getElementById("history-search").value;
+            renderHistory(q);
+        }
+        
+        function clearConsole() {
+            document.getElementById("console-logs").innerHTML = "<div class='log-line info'>Đã xóa log. Sẵn sàng chờ lệnh...</div>";
+        }
+        
+        // Running Python processes via SSE (Server-Sent Events)
+        function runCommand(endpoint, params) {
+            const consoleEl = document.getElementById("console-logs");
+            const consoleContainer = document.getElementById("console-container");
+            
+            consoleContainer.style.display = "block";
+            consoleEl.innerHTML = "<div class='log-line info'>=== [Bắt đầu tiến trình phân tích dữ liệu] ===</div>";
+            
+            const query = new URLSearchParams(params).toString();
+            const eventSource = new EventSource(`${endpoint}?${query}`);
+            
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.log) {
+                    const line = document.createElement("div");
+                    line.className = "log-line";
+                    
+                    // Highlight colors based on keywords
+                    if (data.log.includes("THÀNH CÔNG:") || data.log.includes("Thành công") || data.log.includes("SUCCESS")) {
+                        line.classList.add("success");
+                    } else if (data.log.includes("Lỗi:") || data.log.includes("Error:") || data.log.includes("failed")) {
+                        line.classList.add("error");
+                    }
+                    
+                    line.textContent = data.log;
+                    consoleEl.appendChild(line);
+                    consoleEl.scrollTop = consoleEl.scrollHeight;
+                }
+                
+                if (data.done) {
+                    eventSource.close();
+                    
+                    const line = document.createElement("div");
+                    line.className = data.success ? "log-line success" : "log-line error";
+                    line.textContent = data.success 
+                        ? "\n==================================================\n TIẾN TRÌNH HOÀN THÀNH THÀNH CÔNG!\n=================================================="
+                        : "\n==================================================\n TIẾN TRÌNH BỊ LỖI HOẶC BỊ HỦY!\n==================================================";
+                    consoleEl.appendChild(line);
+                    
+                    if (data.success && data.report_url) {
+                        const linkBox = document.createElement("div");
+                        linkBox.className = "report-link-container";
+                        linkBox.innerHTML = `
+                            <a href="${data.report_url}" target="_blank" class="btn open-report-btn">
+                                📂 Mở Báo Cáo / Hình Ảnh Ngay
+                            </a>
+                        `;
+                        consoleEl.appendChild(linkBox);
+                    }
+                    consoleEl.scrollTop = consoleEl.scrollHeight;
+                    
+                    loadReports();
+                }
+            };
+            
+            eventSource.onerror = function(err) {
+                eventSource.close();
+                const line = document.createElement("div");
+                line.className = "log-line error";
+                line.textContent = "\n[Lỗi] Mất kết nối EventSource với Server. Có thể server backend local đã dừng hoạt động.";
+                consoleEl.appendChild(line);
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            };
+        }
+        
+        // Action Handlers
+        function generateUsage() {
+            const tournament = document.getElementById("usage-tournament").value.trim();
+            const apiKey = document.getElementById("usage-api-key").value.trim();
+            
+            if (!tournament) {
+                alert("Vui lòng nhập Tournament ID hoặc URL!");
+                return;
+            }
+            
+            runCommand("/api/generate-usage", {
+                tournament: tournament,
+                api_key: apiKey
+            });
+        }
+        
+        function compareUsage() {
+            const oldVal = document.getElementById("compare-old").value;
+            const newVal = document.getElementById("compare-new").value;
+            
+            if (!oldVal || !newVal) {
+                alert("Vui lòng chọn đầy đủ báo cáo cũ và mới để tiến hành so sánh!");
+                return;
+            }
+            
+            runCommand("/api/compare", {
+                old: oldVal,
+                new: newVal
+            });
+        }
+        
+        function generateTop8() {
+            const tournament = document.getElementById("top8-tournament").value.trim();
+            
+            if (!tournament) {
+                alert("Vui lòng nhập Tournament ID hoặc URL!");
+                return;
+            }
+            
+            runCommand("/api/generate-top8", {
+                tournament: tournament
+            });
+        }
+    </script>
+</body>
+</html>

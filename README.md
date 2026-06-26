@@ -103,7 +103,33 @@ python3 src/compare_usage.py "Alpensee_Tour_60_usage.json" "Alpensee_Tour_62_usa
 - **Dữ liệu so sánh JSON**: File `.json` chứa thông tin so sánh hoàn chỉnh dạng cấu trúc.
 - **Tóm tắt trên Terminal**: In ra các Pokémon tăng trưởng (Winners) và suy giảm (Losers) mạnh nhất.
 
+---
+
+### 4. Giao diện điều khiển đồ họa (Local Desktop App - src/app.py)
+
+Đây là giao diện điều khiển đồ họa chạy local trên trình duyệt của bạn (Zero-Dependency), giúp bạn thực hiện tất cả các thao tác trên một cách dễ dàng, trực quan mà không cần gõ lệnh Terminal:
+- **Giao diện Dashboard cao cấp**: Thiết kế Premium Dark Mode, hiển thị trực quan các kết quả phân tích.
+- **Hỗ trợ đa dạng đầu vào**: Nhận diện thông minh cả Tournament ID 24 ký tự hex lẫn link URL giải đấu Limitless trực tiếp.
+- **Console Log thời gian thực**: Theo dõi từng bước phân tích ngay trên màn hình (Đang tải standings, Đang lấy đội hình, v.v.).
+- **Quản lý lịch sử**: Xem và truy cập nhanh danh sách tất cả các báo cáo đã tạo trước đó.
+- **Check Update tự động**: Kết nối với GitHub Releases API để hiển thị banner thông báo cập nhật ngay lập tức khi bạn phát hành phiên bản mới trên GitHub.
+
+#### Cách chạy:
+```bash
+python3 src/app.py
+```
+Ứng dụng sẽ tự động khởi chạy một web server mini local tại địa chỉ `http://127.0.0.1:5000` và tự động mở tab trình duyệt mặc định của bạn.
+
 ## Nhật ký cập nhật (Changelog)
+
+### v2.0.0-beta (26/06/2026)
+- **Giao diện điều khiển đồ họa Local Desktop (`src/app.py` & `src/templates/index.html`)**:
+  - Phát triển ứng dụng GUI cục bộ dạng Local Web App với zero-dependency (chỉ sử dụng thư viện chuẩn của Python).
+  - Tích hợp Server-Sent Events (SSE) để truyền phát console log của các script chạy ngầm lên giao diện Web thời gian thực.
+  - Hỗ trợ ghi nhớ Limitless API Key trong localStorage của trình duyệt.
+  - Tự động gọi GitHub Releases API để thông báo cập nhật cho người dùng nếu phát hiện bản phát hành mới.
+- **Đảo ngược bảng tổng hợp Top 12 Pokémon (Transposed summary table)**:
+  - Cập nhật cách bố trí của bảng tóm tắt Top 12 trong HTML: chuyển Pokémon thành dòng (dọc) và các metric (Item, Move, Ability, Teammates) thành cột (ngang) giúp dễ theo dõi và tương thích màn hình tốt hơn.
 
 ### v1.2.0 (18/06/2026)
 - **Tính năng so sánh metagame (`compare_usage.py`)**:
